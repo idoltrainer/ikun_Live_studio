@@ -63,6 +63,9 @@ public class FileController {
 
         validAvatar(multipartFile, "user_avatar");
         User loginUser = userService.getLoginUser(request);
+        if (loginUser == null){
+            return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR);
+        }
         // 文件目录：根据业务、用户来划分
         String uuid = RandomStringUtils.randomAlphanumeric(8);
         String filename = uuid + "-" + multipartFile.getOriginalFilename();
@@ -76,7 +79,7 @@ public class FileController {
             System.out.println(filepath);
             System.out.println(file);
             System.out.println(DOMAIN + filepath);
-            kodoUtils.upload(file,filepath);
+            kodoUtils.sliceUpload(file,filepath);
             // 返回可访问地址
             return ResultUtils.success(DOMAIN + filepath);
         } catch (Exception e) {
@@ -104,9 +107,11 @@ public class FileController {
     @PostMapping("/upload/video")
     public BaseResponse<String> uploadVideo(@RequestPart("file") MultipartFile multipartFile,
                                             HttpServletRequest request) {
-
         validVideo(multipartFile, "user_video");
         User loginUser = userService.getLoginUser(request);
+        if (loginUser == null){
+            return ResultUtils.error(ErrorCode.NOT_LOGIN_ERROR);
+        }
         // 文件目录：根据业务、用户来划分
         String uuid = RandomStringUtils.randomAlphanumeric(8);
         String filename = uuid + "-" + multipartFile.getOriginalFilename();
@@ -120,7 +125,7 @@ public class FileController {
             System.out.println(filepath);
             System.out.println(file);
             System.out.println(DOMAIN + filepath);
-            kodoUtils.upload(file,filepath);
+            kodoUtils.sliceUpload(file,filepath);
             // 返回可访问地址
             FileVO fileVO = new FileVO();
             fileVO.setPlayUrl(DOMAIN + filepath);

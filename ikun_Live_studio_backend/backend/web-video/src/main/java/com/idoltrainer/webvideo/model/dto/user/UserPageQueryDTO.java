@@ -2,10 +2,12 @@ package com.idoltrainer.webvideo.model.dto.user;
 
 import com.idoltrainer.webvideo.model.page.PageQuery;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class UserPageQueryDTO extends PageQuery implements Serializable {
 
     /**

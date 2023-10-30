@@ -10,6 +10,7 @@ import com.qiniu.storage.UploadManager;
 import com.qiniu.storage.model.BatchStatus;
 import com.qiniu.storage.model.DefaultPutRet;
 import com.qiniu.storage.model.FileInfo;
+import com.qiniu.storage.persistent.FileRecorder;
 import com.qiniu.util.Auth;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -18,8 +19,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.*;
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.file.Paths;
 
 
 @Component
@@ -52,6 +55,15 @@ public class KodoUtils {
     String delimiter = "";
 
     /**
+     * 分片上传
+     */
+    public KodoUtils(){
+        cfg.resumableUploadAPIVersion = Configuration.ResumableUploadAPIVersion.V2;// 指定分片上传版本
+        cfg.resumableUploadMaxConcurrentTaskCount = 2;  // 设置分片上传并发，1：采用同步上传；大于1：采用并发上传
+    }
+
+
+    /**
      * 列举空间文件列表
      */
     public void listSpaceFiles() {
@@ -70,7 +82,7 @@ public class KodoUtils {
     }
 
     /**
-     * 上传本地文件
+     * 分片上传本地文件
      */
     public void upload(File file, String filePath) {
         UploadManager uploadManager = new UploadManager(cfg);
@@ -100,6 +112,50 @@ public class KodoUtils {
             }
         }
     }
+
+
+    /**
+     * 上传本地文件
+     */
+    public void sliceUpload(File file, String filePath) {
+        /**
+         *
+         */
+        String[] strings = filePath.split("/");
+        String key = strings[strings.length - 1];
+        Auth auth = Auth.create(accessKey, secretKey);
+        String upToken = auth.uploadToken(bucket);
+        System.out.println("localFilePath:"+filePath);
+        System.out.println("key:"+key);
+        System.out.println("token:" + upToken);
+        String localTempDir = Paths.get(System.getenv("java.io.tmpdir"), bucket).toString();
+        try {
+            //设置断点续传文件进度保存目录
+            FileRecorder fileRecorder = new FileRecorder(localTempDir);
+            UploadManager uploadManager = new UploadManager(cfg, fileRecorder);
+            try {
+                Response response = uploadManager.put(file,filePath, upToken);
+                //解析上传成功的结果
+                DefaultPutRet putRet = new Gson().fromJson(response.bodyString(), DefaultPutRet.class);
+                System.out.println(putRet.key);
+                System.out.println(putRet.hash);
+            } catch (QiniuException ex) {
+                ex.printStackTrace();
+                if (ex.response != null) {
+                    System.err.println(ex.response);
+                    try {
+                        String body = ex.response.toString();
+                        System.err.println(body);
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
 
     /**
      * 获取下载文件的链接

@@ -6,10 +6,10 @@
 
     <resultMap id="BaseResultMap" type="com.idoltrainer.webvideo.domain.Relations">
             <id property="id" column="id" jdbcType="BIGINT"/>
-            <result property="followid" column="followId" jdbcType="BIGINT"/>
-            <result property="followerid" column="followerId" jdbcType="BIGINT"/>
-            <result property="createtime" column="createTime" jdbcType="TIMESTAMP"/>
-            <result property="updatetime" column="updateTime" jdbcType="TIMESTAMP"/>
+            <result property="followerId" column="followId" jdbcType="BIGINT"/>
+            <result property="followerId" column="followerId" jdbcType="BIGINT"/>
+            <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="updateTime" jdbcType="TIMESTAMP"/>
     </resultMap>
 
     <sql id="Base_Column_List">

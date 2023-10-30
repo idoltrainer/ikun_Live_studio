@@ -97,6 +97,18 @@
             <artifactId>qiniu-java-sdk</artifactId>
             <version>7.7.0</version>
         </dependency>
+        <!--    netty    -->
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.39.Final</version>
+        </dependency>
+        <!-- openAi -->
+        <dependency>
+            <groupId>com.unfbx</groupId>
+            <artifactId>chatgpt-java</artifactId>
+            <version>1.0.14-beta1</version>
+        </dependency>
     </dependencies>
 
     <build>

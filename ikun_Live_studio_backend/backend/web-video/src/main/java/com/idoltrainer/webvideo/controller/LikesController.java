@@ -30,7 +30,7 @@ import java.util.List;
  * 点赞接口
  *
  * @author zhangjieming
- * @time   2023/10/24
+ * @time   2023/10/24 更新
  */
 @RestController
 @RequestMapping("/likes")
